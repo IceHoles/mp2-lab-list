@@ -203,7 +203,7 @@ public:
 
 	void insert_after(Node<T>* prev, T value) {
 		Node<T>* tmp = prev->next;
-		prev->next = new Node();
+		prev->next = new Node()<T>;
 		prev->next->elem = value;
 		prev->next->next = tmp;
 	};

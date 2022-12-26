@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(PROJECT_NAME translator)
+set(PROJECT_NAME list)
 project(${PROJECT_NAME})
 
 set(MP2_TESTS   "test_${PROJECT_NAME}")
