@@ -21,7 +21,6 @@ template <typename T>
 class List {
 	Node<T>* first = nullptr;
 public:
-	template <typename T>
 	class iterator {				 //made an iterator and never used it im scared idk how to work with them
 
 		Node<T>* ptr;
