@@ -159,7 +159,7 @@ public:
 
 	Node<T>* get_node(size_t pos) {
 		Node<T>* tmp = first;
-		for (int i = 1; i < pos; i++) tmp = tmp->next;
+		for (int i = 0; i < pos; i++) tmp = tmp->next;
 		return tmp;
 	}
 
@@ -174,36 +174,36 @@ public:
 	};
 
 	void erase_after(Node<T>* prev) {
-		Node<T>* tmp = prev->next;
-		prev->next = prev->next->next;
-		delete tmp;
+		if (prev && prev->next) {
+			Node<T>* tmp = prev->next;
+			prev->next = prev->next->next;
+			delete tmp;
+		}
 	};
 
 	void merge(List& list) {
 		Node<T>* tmp = this->first;
-		Node<T>* tmp2;
+		Node<T>* tmp2 = nullptr;
 		while (tmp) {
 			tmp2 = tmp;
 			tmp = tmp->next;
 		}
-		tmp2->next = list.first;
-	};
-
-	void merge(List&& list) {
-		Node<T>* tmp = this->first;
-		Node<T>* tmp2;
-		while (tmp) {
-			tmp2 = tmp;
-			tmp = tmp->next;
+		if (tmp2) {
+			tmp2->next = list.first;
+			list.first = nullptr;
 		}
-		tmp2->next = list.first;
+		else {
+			first = list.first;
+			list.first = nullptr;
+		}
 	};
 
 	//void sort();		// O(n log n)	merge sort task12
 
 	void insert_after(Node<T>* prev, T value) {
+		if (!prev) throw std::invalid_argument("L");
 		Node<T>* tmp = prev->next;
-		prev->next = new Node()<T>;
+		prev->next = new Node<T>();
 		prev->next->elem = value;
 		prev->next->next = tmp;
 	};
@@ -286,36 +286,30 @@ public:
 		}
 	}
 
-	void merge_sorted_lists(List& list) {
+	List<T> merge_sorted_lists(List& list) {
+		List<T> l;
 		Node<T>* ptr1 = first;
 		Node<T>* ptr2 = list.first;
-		Node<T>* tmp = new Node<T>();
-		Node<T>* ptr3 = tmp;
 		while (ptr1 && ptr2) {
 			if (ptr1->elem <= ptr2->elem) {
-				ptr3->next = ptr1;
-				ptr3 = ptr1;
+				l.push_front(ptr1->elem);
 				ptr1 = ptr1->next;
 			}
 			else {
-				ptr3->next = ptr2;
-				ptr3 = ptr2;
+				l.push_front(ptr2->elem);
 				ptr2 = ptr2->next;
 			}
 		}
 		while (ptr2) {
-			ptr3->next = ptr2;
-			ptr3 = ptr2;
+			l.push_front(ptr2->elem);
 			ptr2 = ptr2->next;
 		}
 		while (ptr1) {
-			ptr3->next = ptr1;
-			ptr3 = ptr1;
+			l.push_front(ptr1->elem);
 			ptr1 = ptr1->next;
 		}
-		first = tmp->next;
-		delete tmp;
-		list.first = nullptr;
+		l.reverse();
+		return l;
 	};
 
 	void sorted_insert(T value) {
@@ -468,23 +462,21 @@ public:
 	}
 
 	void merge_sort() {
-		if (!first->next) {
+		if (!first->next) return;
+		else {
 			Node<T>* center = first;
 			Node<T>* tmp = first;
-			Node<T>* prev = center;
-			while (tmp) {
-				if (tmp->next)
-					tmp = tmp->next->next;
-				else break;
+			Node<T>* prev = first;
+			while (tmp && tmp->next) {
+				tmp = tmp->next->next;
 				prev = center;
 				center = center->next;
 			}
-			if (prev == first->next) return;
 			List rightList(prev->next);
 			prev->next = nullptr;
 			merge_sort();
 			rightList.merge_sort();
-			this->merge_sorted_lists(rightList);
+			*this = merge_sorted_lists(rightList);
 		}
 	};
 
